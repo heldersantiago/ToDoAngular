@@ -1,37 +1,43 @@
-<section class="heading-section">
-    <div class="d-flex justify-content-end">
-        <div class="dropdown">
-            <button class="btn dropdown-toggle text-light fw-bold" type="button" data-bs-toggle="dropdown"
-                aria-expanded="true">
-                <i class="material-icons text-light">person</i>
-                heldersantiago
-            </button>
-            <ul class="dropdown-menu bg-primary p-2">
-                <li><a style=" text-decoration: none;" class="drop-i text-light fw-bold p-2"
-                        href="#">heldersantiago273&#64;gmail.com</a></li>
-                <li><a href="" class="drop-i text-light fw-bold p-2" style="text-decoration: none;">Terminar sessão<i
-                            class="material-icons text-light p-1 fw-bold">logout</i></a></li>
-            </ul>
-        </div>
-    </div>
-    <h1 class="title text-center">Encontre as tuas tarefas aqui!</h1>
-</section>
+<app-header [title]="title"></app-header>
 <div class="container">
+    <!-- <mat-snack-bar [open]="feedbackMessage" [duration]="3000">
+        {{ feedbackMessage }}
+    </mat-snack-bar> -->
+
     <div class="add-todo-box shadow-sm"> <!-- [ngFormOptions]="{updateOn: 'blur'}" -->
         <form #form="ngForm" class="row g-3 align-items-center" (ngSubmit)="OnFormSubmit(form)">
-            <label for="exampleFormControlInput1" class="form-label fw-bold fs-2">Cria uma nova tarefa</label>
+            <div class="bg-success text-light fw-bold p-1 shadow-lg rounded text-center" *ngIf="feedbackMessageSuccess">
+                {{ feedbackMessageSuccess }}
+            </div>
+            <div class="bg-danger text-light fw-bold p-1 shadow-lg rounded text-center" *ngIf="feedbackMessageError">
+                {{ feedbackMessageError }}
+            </div>
+            <!-- <div class="text-light fw-bold bg-success  p-2" *ngIf="loading">loading request...</div> -->
+            <label for="inlineFormInputGroupUsername" class="form-label fw-bold fs-2">Cria uma nova tarefa</label>
             <div class="col-12">
                 <div class="input-group">
-                    <input ngModel name="name" required type="text" class="form-control"
+                    <input ngModel #todoName="ngModel" name="name" required type="text" class="form-control"
                         id="inlineFormInputGroupUsername" placeholder="Nome">
                 </div>
+                <p *ngIf="todoName.invalid && showValidationsErrors" class="text-danger">O campo nome* é obrigatório</p>
             </div>
             <div class="col-12">
                 <div class="input-group">
-                    <textarea ngModel name="description" required type="text" class="form-control"
-                        id="inlineFormInputGroupUsername" placeholder="Descrição"></textarea>
+                    <textarea ngModel #todoDescription="ngModel" name="description" required type="text"
+                        class="form-control" id="inlineFormInputGroupUsername2" placeholder="Descrição"></textarea>
+                </div>
+                <p *ngIf="todoDescription.invalid && showValidationsErrors" class="text-danger">O campo descrição* é
+                    obrigatória</p>
+            </div>
+
+            <label class="form-label text-success fw-bold">*opcional: Cria tarefa(s) carregando um ficheiro
+                Excel</label>
+            <div class="col-12 optional">
+                <div class="input-group">
+                    <input (change)="ReadExcel($event)" type="file" class="form-control" />
                 </div>
             </div>
+
             <div class="col-12">
                 <div class="row">
                     <div class="col-sm-8 form-check">
@@ -51,7 +57,7 @@
 
 <section class="section">
     <div class="container mt-4">
-        <label for="exampleFormControlInput1" class="form-label fw-bold fs-4">Lista das suas tarefas</label>
+        <label class="form-label fw-bold fs-4">Lista das suas tarefas</label>
         <div class="todos-list shadow-sm">
             <table class="table">
                 <thead class="table table-striped table-dark">
@@ -64,25 +70,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let todo of todos ">
+                    <tr *ngFor="let todo of todos">
                         <th scope="row">{{ todo.id }}</th>
                         <td>{{ todo.name }}</td>
                         <td>{{ todo.description }}</td>
                         <td>
-                            <label for=""
-                                class=" {{ todo.completed ? 'bg-success': 'bg-warning' }}  p-1 rounded text-light">
+                            <label class="{{ todo.completed ? 'bg-success': 'bg-warning' }}  p-1 rounded text-light">
                                 {{ todo.completed ? 'concluído':"pendente" }}
                             </label>
                         </td>
                         <td>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <a class="btn btn-primary text-light" href="#"><i
-                                            class="material-icons">edit</i></a>
+                                <div class="col-sm-6" (click)="OnUpdate(todo.id)">
+                                    <a class="btn btn-primary text-light"><i class="material-icons">edit</i></a>
                                 </div>
-                                <div class="col-sm-6">
-                                    <a class="btn btn-danger text-light" href="#"><i
-                                            class="material-icons">delete</i></a>
+                                <div class="col-sm-6" (click)="OnDelete(todo.id)">
+                                    <a class="btn btn-danger text-light"><i class="material-icons">delete</i></a>
                                 </div>
                             </div>
                         </td>
